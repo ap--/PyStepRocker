@@ -2,8 +2,35 @@
 import TMCL
 
 class StepRocker(object):
-    def __init__(self, port="/dev/ttyACM0", debug=False):
+    def __init__(self, N0, N1=None, N2=None, port="/dev/ttyACM0", debug=False):
+        self._N0 = int(N0)
+        self._N1 = None if (N1 is None) else int(N1)
+        self._N2 = None if (N2 is None) else int(N2)
         self.TMCL = TMCL.TMCLDevice(port, debug)
+
+    @property
+    def N0(self):
+        return self._N0
+    
+    @property
+    def N1(self):
+        if self._N1 is None:
+            raise RuntimeError('Please set number of steps for this Motor')
+        return self._N1
+
+    @property
+    def N2(self):
+        if self._N2 is None:
+            raise RuntimeError('Please set number of steps for this Motor')
+        return self._N2
+
+    def set_motor_steps(self, N0=None, N1=None, N2=None):
+        if not (N0 is None):
+            self._N0 = int(N0)
+        if not (N1 is None):
+            self._N1 = int(N1)
+        if not (N2 is None):
+            self._N2 = int(N2)
 
     def get_globals(self):
         ret = {}
@@ -47,5 +74,5 @@ class StepRocker(object):
 
 if __name__ == "__main__":
 
-    rocker = StepRocker('/dev/ttyACM0')
+    rocker = StepRocker(24, port='/dev/ttyACM0')
 
