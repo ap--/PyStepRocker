@@ -6,7 +6,7 @@ class StepRocker(object):
         self._N0 = int(N0)
         self._N1 = None if (N1 is None) else int(N1)
         self._N2 = None if (N2 is None) else int(N2)
-        self.TMCL = TMCL.TMCLDevice(port, debug)
+        self.TMCL = TMCL.Device(port, debug)
 
     @property
     def N0(self):

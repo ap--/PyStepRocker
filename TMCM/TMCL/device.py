@@ -6,7 +6,7 @@ from consts import *
 from error import *
 
 
-class TMCLDevice(object):
+class Device(object):
 
     def __init__(self, port="/dev/ttyACM0", debug=False):
         self._port = port
