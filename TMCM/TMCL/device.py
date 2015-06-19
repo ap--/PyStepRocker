@@ -1,9 +1,9 @@
 
 import serial
 
-from TMCLcodec import *
-from TMCLdicts import *
-from TMCLError import *
+from codec import *
+from consts import *
+from error import *
 
 
 class TMCLDevice(object):

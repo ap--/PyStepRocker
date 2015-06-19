@@ -1,3 +1,3 @@
 
-from TMCL import *
+from device import *
 

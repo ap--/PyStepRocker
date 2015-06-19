@@ -1,5 +1,5 @@
 
-from TMCLError import *
+from error import *
 
 
 def encodeRequestCommand(m_address, n_command, n_type, n_motor, value, debug=False):
