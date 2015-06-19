@@ -1,0 +1,5 @@
+
+class TMCLError(Exception):
+    pass
+
+
