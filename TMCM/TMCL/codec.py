@@ -41,7 +41,7 @@ def decodeRequestCommand(cmd_string):
     byte_array = bytearray(cmd_string)
     if len(byte_array) != 9:
         raise TMCLError("Commandstring shorter than 9 bytes")
-    if byte_array[8] != sum(byte_array[:8]) % (1<<8):
+    if byte_array[8] != byte(sum(byte_array[:8])):
         raise TMCLError("Checksum error in command %s" % cmd_string)
     ret = {}
     ret['module-address'] = byte_array[0]
@@ -56,7 +56,7 @@ def decodeReplyCommand(cmd_string):
     byte_array = bytearray(cmd_string)
     if len(byte_array) != 9:
         raise TMCLError("Commandstring shorter than 9 bytes")
-    if byte_array[8] != sum(byte_array[:8]) % (1<<8):
+    if byte_array[8] != byte(sum(byte_array[:8])):
         raise TMCLError("Checksum error in command %s" % cmd_string)
     ret = {}
     ret['reply-address'] = byte_array[0]
