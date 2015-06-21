@@ -6,6 +6,14 @@ from consts import *
 from error import *
 
 
+MAX_MOTOR = 3
+MAX_VELOCITY = 2048
+MAX_COORDINATE = 21
+MAX_POSITION = 2**23
+MAX_OUTPUT = (4, 3, 5)
+MAX_BANK = 4
+
+
 class Device(object):
 
     def __init__(self, port="/dev/ttyACM0", debug=False):
@@ -51,9 +59,9 @@ class Device(object):
         cn = NUMBER_COMMANDS['ROR']
         mn = int(motor_number)
         v = int(velocity)
-        if not 0 <= mn <= 2:
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("ROR: motor_number not in range(3)")
-        if not 0 <= v <= 2047:
+        if not 0 <= v < MAX_VELOCITY:
             raise TMCLError("ROR: velocity not in range(2048)")
         status, value = self._query((0x01, cn, 0x00, mn, v))
         if status != STAT_OK:
@@ -73,9 +81,9 @@ class Device(object):
         cn = NUMBER_COMMANDS['ROL']
         mn = int(motor_number)
         v = int(velocity)
-        if not 0 <= mn <= 2:
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("ROL: motor_number not in range(3)")
-        if not 0 <= v <= 2047:
+        if not 0 <= v < MAX_VELOCITY:
             raise TMCLError("ROL: velocity not in range(2048)")
         status, value = self._query((0x01, cn, 0x00, mn, v))
         if status != STAT_OK:
@@ -92,7 +100,7 @@ class Device(object):
         """
         cn = NUMBER_COMMANDS['MST']
         mn = int(motor_number)
-        if not 0 <= mn <= 2:
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("MST: motor_number not in range(3)")
         status, value = self._query((0x01, cn, 0x00, mn, 0x00))
         if status != STAT_OK:
@@ -115,7 +123,7 @@ class Device(object):
         
         Three operation types are available:
             * Moving to an absolute position in the range from 
-              -8388608 to +8388607 (-223 to+223-1).
+              -8388608 to +8388607 (-2**23 to +2**23-1).
             * Starting a relative movement by means of an offset to the
               actual position. In this case, the new resulting position
               value must not exceed the above mentioned limits, too.
@@ -129,14 +137,14 @@ class Device(object):
         mn = int(motor_number)
         t = str(cmdtype)
         v = int(value)
-        if not 0 <= mn <= 2:
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("MVP: motor_number not in range(3)")
         if t not in CMD_MVP_TYPES.keys():
             raise TMCLError("MVP: type not in ['ABS', 'REL', 'COORD']")
-        if t == 'ABS' and not -2**23 <= v <= 2**23:
-            raise TMCLError("MVP: ABS: value not in range(-2**23,2**23)")
+        if t == 'ABS' and not -MAX_POSITION <= v < MAX_POSITION:
+            raise TMCLError("MVP: ABS: value not in range(-2**23, 2**23)")
         # pass 'REL' because we dont know the current pos here
-        if t == 'COORDS' and not 0 <= v <= 20:
+        if t == 'COORDS' and not 0 <= v < MAX_COORDINATE:
             raise TMCLError("MVP: COORDS: value not in range(21)")
         t = CMD_MVP_TYPES[t] % (1<<8)
         status, value = self._query((0x01, cn, t, mn, v))
@@ -169,7 +177,7 @@ class Device(object):
         cn = NUMBER_COMMANDS['RFS']
         mn = int(motor_number)
         t = str(cmdtype)
-        if not 0 <= mn <= 2:
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("RFS: motor_number not in range(3)")
         if t not in CMD_RFS_TYPES.keys():
             raise TMCLError("RFS: type not in ['START', 'STOP', 'STATUS']")
@@ -196,9 +204,9 @@ class Device(object):
         cn = NUMBER_COMMANDS['CCO']
         mn = int(motor_number)
         coord_n = int(coordinate_number)
-        if not 0 <= mn <= 2:
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("CCO: motor_number not in range(3)")
-        if not 0 <= coord_n <= 20:
+        if not 0 <= coord_n < MAX_COORDINATE:
             raise TMCLError("CCO: coordinate_number not in range(21)")
         status, value = self._query((0x01, cn, coord_n, mn, 0x0000))
         if status != STAT_OK:
@@ -224,11 +232,11 @@ class Device(object):
         mn = int(motor_number)
         coord_n = int(coordinate_number)
         pos = int(position)
-        if not 0 <= coord_n <= 20:
+        if not 0 <= coord_n < MAX_COORDINATE:
             raise TMCLError("SCO: coordinate_number not in range(21)")
-        if not -2**23 <= pos <= 2**23:
-            raise TMCLError("SCO: position not in range(-2**23,2**23)")
-        if not 0 <= mn <= 2:
+        if not -MAX_POSITION <= pos < MAX_POSITION:
+            raise TMCLError("SCO: position not in range(-2**23, 2**23)")
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("SCO: motor_number not in range(3)")
         elif not (mn == 0xFF and pos == 0):
             raise TMCLError("SCO: special function needs pos == 0")
@@ -258,9 +266,9 @@ class Device(object):
         cn = NUMBER_COMMANDS['GCO']
         mn = int(motor_number)
         coord_n = int(coordinate_number)
-        if not 0 <= coord_n <= 20:
+        if not 0 <= coord_n < MAX_COORDINATE:
             raise TMCLError("GCO: coordinate_number not in range(21)")
-        if not (0 <= mn <= 2 or mn == 0xFF):
+        if not (0 <= mn < MAX_MOTOR or mn == 0xFF):
             raise TMCLError("GCO: motor_number not in range(3)")
         elif not (mn == 0xFF and pos == 0):
             raise TMCLError("GCO: special function needs pos == 0")
@@ -280,10 +288,11 @@ class Device(object):
         """
         cn = NUMBER_COMMANDS['SIO']
         outp = int(port_number)
+        bank = 0x02
         s = bool(state)
-        if not 0 <= outp <= 4:
+        if not 0 <= outp < MAX_OUTPUT[bank]:
             raise TMCLError("SIO: output_number not in range(5)")
-        status, value = self._query((0x01, cn, outp, 0x02, s))
+        status, value = self._query((0x01, cn, outp, bank, s))
         if status != STAT_OK:
             raise TMCLError("SIO: got status "+STATUSCODES[status])
         return None
@@ -305,11 +314,11 @@ class Device(object):
         cn = NUMBER_COMMANDS['GIO']
         outp = int(port_number)
         bank = int(bank_number)
-        if bank == 0 and not (0 <= outp <= 3):
+        if bank == 0 and not (0 <= outp < MAX_OUTPUT[bank]):
             raise TMCLError("GIO: output_number not in range(4) @ bank0")
-        elif bank == 1 and not (0 <= outp <= 2):
+        elif bank == 1 and not (0 <= outp < MAX_OUTPUT[bank]):
             raise TMCLError("GIO: output_number not in range(3) @ bank1")
-        elif bank == 2 and not (0 <= outp <= 4):
+        elif bank == 2 and not (0 <= outp < MAX_OUTPUT[bank]):
             raise TMCLError("GIO: output_number not in range(5) @ bank2")
         else:
             raise TMCLError("GIO: bank_number not in range(3)")
@@ -332,7 +341,7 @@ class Device(object):
         """
         cn = NUMBER_COMMANDS['SAP']
         mn = int(motor_number)
-        if not 0 <= mn <= 2:
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("SAP: motor_number not in range(3)")
         pn, v = self._pn_checkrange(parameter_number, value, "SAP: ")
         status, value = self._query((0x01, cn, pn, mn, v))
@@ -357,7 +366,7 @@ class Device(object):
         cn = NUMBER_COMMANDS['GAP']
         mn = int(motor_number)
         pn = int(parameter_number)
-        if not 0 <= mn <= 2:
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("GAP: motor_number not in range(3)")
         if pn not in AXIS_PARAMETER.keys():
             raise TMCLError(prefix+"parameter number not valid")
@@ -392,7 +401,7 @@ class Device(object):
         bn = int(bank_number)
         pn = int(parameter_number)
         v = int(value)
-        if not 0 <= bn <= 3:
+        if not 0 <= bn < MAX_BANK:
             raise TMCLError("SGP: bank_number not in range(4)")
         pn, v = self._pn_checkrange((bn, pn), v)
         status, value = self._query((0x01, cn, pn, bn, v))
@@ -420,7 +429,7 @@ class Device(object):
         cn = NUMBER_COMMANDS['GGP']
         bn = int(bank_number)
         pn = int(parameter_number)
-        if not 0 <= bn <= 3:
+        if not 0 <= bn < MAX_BANK:
             raise TMCLError("GGP: bank_number not in range(4)")
         if not (bn, pn) in GLOBAL_PARAMETER.keys():
             raise TMCLError("GGP: parameter number not valid")
@@ -441,7 +450,7 @@ class Device(object):
         """
         cn = NUMBER_COMMANDS['STAP']
         mn = int(motor_number)
-        if not 0 <= mn <= 2:
+        if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("STAP: motor_number not in range(3)")
         pn = int(parameter_number)
         if not pn in AXIS_PARAMETER.keys():
