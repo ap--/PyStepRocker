@@ -20,7 +20,7 @@ class Device(object):
         self._port = port
         self._debug = debug
         self._ser = serial.Serial(port)
-    
+
     def _query(self, request):
         req = encodeRequestCommand(*request)
         if self._debug:
@@ -39,12 +39,12 @@ class Device(object):
             raise TMCLError("{}: parameter number {} not in {}".format(prefix, pn, DICT.keys()))
         name, ranges, _ = DICT[parameter_number]
         NOTINRANGE = False
-        for (l,h) in ranges:
+        for (l, h) in ranges:
             if not (l <= v < h):
                 NOTINRANGE = True
         if NOTINRANGE:
-            raise TMCLError("{}: parameter {} not in ".format(prefix, name) + 
-                             " + ".join(["range({}, {})".format(l, h) for l, h in ranges]))
+            raise TMCLError("{}: parameter {} not in ".format(prefix, name) +
+                            " + ".join(["range({}, {})".format(l, h) for l, h in ranges]))
         return pn, v
 
     def ror(self, motor_number, velocity):
@@ -74,7 +74,7 @@ class Device(object):
         tmcl_rol(motor_number, velocity) --> None
 
         With this command the motor will be instructed to rotate with a
-        specified velocity (opposite direction compared to tmcl_rol, 
+        specified velocity (opposite direction compared to tmcl_rol,
         decreasing the position counter).
 
         TMCL-Mnemonic: ROL <motor number>, <velocity>
@@ -91,11 +91,11 @@ class Device(object):
         if status != STAT_OK:
             raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
         return None
-    
+
     def mst(self, motor_number):
         """
         tmcl_mst(motor_number) --> None
-        
+
         The motor will be instructed to stop.
 
         TMCL-Mnemonic: MST <motor number>
@@ -115,22 +115,22 @@ class Device(object):
         tmcl_mvp(motor_number, type, value) --> None
 
         The motor will be instructed to move to a specified relative or
-        absolute position or a pre-programmed coordinate. It will use 
-        the acceleration/deceleration ramp and the positioning speed 
+        absolute position or a pre-programmed coordinate. It will use
+        the acceleration/deceleration ramp and the positioning speed
         programmed into the unit. This command is non-blocking: that is,
         a reply will be sent immediately after command interpretation
-        and initialization of the motion controller. Further commands 
-        may follow without waiting for the motor reaching its end 
-        position. The maximum velocity and acceleration are defined by 
+        and initialization of the motion controller. Further commands
+        may follow without waiting for the motor reaching its end
+        position. The maximum velocity and acceleration are defined by
         axis parameters #4 and #5.
-        
+
         Three operation types are available:
-            * Moving to an absolute position in the range from 
+            * Moving to an absolute position in the range from
               -8388608 to +8388607 (-2**23 to +2**23-1).
             * Starting a relative movement by means of an offset to the
               actual position. In this case, the new resulting position
               value must not exceed the above mentioned limits, too.
-            * Moving the motor to a (previously stored) coordinate 
+            * Moving the motor to a (previously stored) coordinate
               (refer to SCO for details).
 
         TMCL-Mnemonic: MVP <ABS|REL|COORD>, <motor number>,
@@ -162,13 +162,13 @@ class Device(object):
 
         The TMCM-1110 has a built-in reference search algorithm which
         can be used. The reference search algorithm provides switching
-        point calibration and three switch modes. The status of the 
-        reference search can also be queried to see if it has already 
-        finished. (In a TMCLTM program it is better to use the WAIT 
-        command to wait for the end of a reference search.) Please see 
+        point calibration and three switch modes. The status of the
+        reference search can also be queried to see if it has already
+        finished. (In a TMCLTM program it is better to use the WAIT
+        command to wait for the end of a reference search.) Please see
         the appropriate parameters in the axis parameter table to
-        configure the reference search algorithm to meet your needs 
-        (chapter 6). The reference search can be started, stopped, and 
+        configure the reference search algorithm to meet your needs
+        (chapter 6). The reference search can be started, stopped, and
         the actual status of the reference search can be checked.
 
         if cmdtype in ['START', 'STOP']:
@@ -197,9 +197,9 @@ class Device(object):
         tmcl_cco(motor_number, coordinate_number) --> None
 
         The actual position of the axis is copied to the selected
-        coordinate variable. Depending on the global parameter 84, the 
+        coordinate variable. Depending on the global parameter 84, the
         coordinates are only stored in RAM or also stored in the EEPROM
-        and copied back on startup (with the default setting the 
+        and copied back on startup (with the default setting the
         coordinates are stored in RAM only). Please see the SCO and GCO
         commands on how to copy coordinates between RAM and EEPROM.
         Note, that the coordinate number 0 is always stored in RAM only.
@@ -223,13 +223,13 @@ class Device(object):
         """
         tmcl_sco(self, motor_number, coordinate_number, position) --> None
 
-        Up to 20 position values (coordinates) can be stored for every 
-        axis for use with the MVP COORD command. This command sets a 
-        coordinate to a specified value. Depending on the global 
-        parameter 84, the coordinates are only stored in RAM or also 
-        stored in the EEPROM and copied back on startup (with the 
+        Up to 20 position values (coordinates) can be stored for every
+        axis for use with the MVP COORD command. This command sets a
+        coordinate to a specified value. Depending on the global
+        parameter 84, the coordinates are only stored in RAM or also
+        stored in the EEPROM and copied back on startup (with the
         default setting the coordinates are stored in RAM only).
-        Please note that the coordinate number 0 is always stored in 
+        Please note that the coordinate number 0 is always stored in
         RAM only.
 
         TMCL-Mnemonic: SCO <coordinate number>, <motor number>, <position>
@@ -256,16 +256,16 @@ class Device(object):
         """
         tmcl_gco(self, motor_number, coordinate_number) --> int
 
-        This command makes possible to read out a previously stored 
+        This command makes possible to read out a previously stored
         coordinate. In standalone mode the requested value is copied to
-        the accumulator register for further processing purposes such 
-        as conditioned jumps. In direct mode, the value is only output 
-        in the value field of the reply, without affecting the 
-        accumulator. Depending on the global parameter 84, the 
-        coordinates are only stored in RAM or also stored in the EEPROM 
-        and copied back on startup (with the default setting the 
+        the accumulator register for further processing purposes such
+        as conditioned jumps. In direct mode, the value is only output
+        in the value field of the reply, without affecting the
+        accumulator. Depending on the global parameter 84, the
+        coordinates are only stored in RAM or also stored in the EEPROM
+        and copied back on startup (with the default setting the
         coordinates are stored in RAM, only).
-        Please note that the coordinate number 0 is always stored in 
+        Please note that the coordinate number 0 is always stored in
         RAM, only.
 
         TMCL-Mnemonic: GCO <coordinate number>, <motor number>
@@ -289,7 +289,7 @@ class Device(object):
         """
         tmcl_sio(output_number, state) --> None
 
-        This command sets the status of the general digital output 
+        This command sets the status of the general digital output
         either to low (0) or to high (1).
 
         TMCL-Mnemonic: SIO <port number>, <bank number>, <value>
@@ -305,19 +305,19 @@ class Device(object):
         if status != STAT_OK:
             raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
         return None
-        
+
     def gio(port_number, bank_number):
         """
         tmcl_gio(port_number, bank_number) --> int
-        
-        With this command the status of the two available general 
-        purpose inputs of the module can be read out. The function 
+
+        With this command the status of the two available general
+        purpose inputs of the module can be read out. The function
         reads a digital or analogue input port. Digital lines will read
-        0 and 1, while the ADC channels deliver their 12 bit result in 
-        the range of 0... 4095. In direct mode the value is only output 
+        0 and 1, while the ADC channels deliver their 12 bit result in
+        the range of 0... 4095. In direct mode the value is only output
         in the value field of the reply, without affecting the accumulator.
         The actual status of a digital output line can also be read.
-       
+
         TMCL-Mnemonic: GIO <port number>, <bank number>
         """
         c = 'GIO'
@@ -341,10 +341,10 @@ class Device(object):
         """
         tmcl_sap(motor_number, parameter_number, value) --> None
 
-        Most of the motion control parameters of the module can be 
-        specified with the SAP command. The settings will be stored in 
-        SRAM and therefore are volatile. That is, information will be 
-        lost after power off. Please use command STAP (store axis 
+        Most of the motion control parameters of the module can be
+        specified with the SAP command. The settings will be stored in
+        SRAM and therefore are volatile. That is, information will be
+        lost after power off. Please use command STAP (store axis
         parameter) in order to store any setting permanently.
 
         TMCL-Mnemonic: SAP <parameter number>, <motor number>, <value>
@@ -358,17 +358,17 @@ class Device(object):
         status, value = self._query((0x01, cn, pn, mn, v))
         if status != STAT_OK:
             raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
-        return None 
-        
+        return None
+
     def gap(self, motor_number, parameter_number):
         """
         tmcl_gap(self, motor_number, parameter_number) --> int
 
-        Most parameters of the TMCM-1110 can be adjusted individually 
-        for the axis. With this parameter they can be read out. In 
+        Most parameters of the TMCM-1110 can be adjusted individually
+        for the axis. With this parameter they can be read out. In
         standalone mode the requested value is also transferred to the
-        accumulator register for further processing purposes (such as 
-        conditioned jumps). In direct mode the value read is only 
+        accumulator register for further processing purposes (such as
+        conditioned jumps). In direct mode the value read is only
         output in the value field of the reply (without affecting the
         accumulator).
 
@@ -385,23 +385,23 @@ class Device(object):
         status, value = self._query((0x01, cn, pn, mn, 0x0000))
         if status != STAT_OK:
             raise TMCLError("{}: got status: {}, while querying: {}".format(c, STATUSCODES[status], pn))
-        return value 
+        return value
 
     def sgp(self, bank_number, parameter_number, value):
         """
         tmcl_sgp(self, bank_number, parameter_number, value) --> None
 
-        Most of the module specific parameters not directly related to 
-        motion control can be specified and the TMCLTM user variables 
-        can be changed. Global parameters are related to the host 
+        Most of the module specific parameters not directly related to
+        motion control can be specified and the TMCLTM user variables
+        can be changed. Global parameters are related to the host
         interface, peripherals or other application specific variables.
         The different groups of these parameters are organized in banks
         to allow a larger total number for future products. Currently,
-        bank 0 and bank 1 are used for global parameters. Bank 2 is 
-        used for user variables and bank 3 is used for interrupt 
+        bank 0 and bank 1 are used for global parameters. Bank 2 is
+        used for user variables and bank 3 is used for interrupt
         configuration.
-        
-        All module settings will automatically be stored non-volatile 
+
+        All module settings will automatically be stored non-volatile
         (internal EEPROM of the processor). The TMCLTM user variables
         will not be stored in the EEPROM automatically, but this can
         be done by using STGP commands.
@@ -419,21 +419,21 @@ class Device(object):
         status, value = self._query((0x01, cn, pn, bn, v))
         if status != STAT_OK:
             raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
-        return None 
-        
+        return None
+
     def ggp(self, bank_number, parameter_number):
         """
         tmcl_ggp(self, bank_number, parameter_number) --> int
-        
+
         All global parameters can be read with this function. Global
-        parameters are related to the host interface, peripherals or 
-        application specific variables. The different groups of these 
-        parameters are organized in banks to allow a larger total 
-        number for future products. Currently, bank 0 and bank 1 are 
+        parameters are related to the host interface, peripherals or
+        application specific variables. The different groups of these
+        parameters are organized in banks to allow a larger total
+        number for future products. Currently, bank 0 and bank 1 are
         used for global parameters. Bank 2 is used for user variables
-        and bank 3 is used for interrupt configuration. Internal 
-        function: the parameter is read out of the correct position 
-        in the appropriate device. The parameter format is converted 
+        and bank 3 is used for interrupt configuration. Internal
+        function: the parameter is read out of the correct position
+        in the appropriate device. The parameter format is converted
         adding leading zeros (or ones for negative values).
 
         TMCL-Mnemonic: GGP <parameter number>, <bank number>
@@ -454,9 +454,9 @@ class Device(object):
     def stap(self, motor_number, parameter_number):
         """
         tmcl_stap(self, motor_number, parameter_number) --> None
-        
-        An axis parameter previously set with a Set Axis Parameter 
-        command (SAP) will be stored permanent. Most parameters are 
+
+        An axis parameter previously set with a Set Axis Parameter
+        command (SAP) will be stored permanent. Most parameters are
         automatically restored after power up.
 
         TMCL-Mnemonic: STAP <parameter number>, <motor number>
@@ -472,7 +472,7 @@ class Device(object):
         status, value = self._query((0x01, cn, pn, mn, 0x0000))
         if status != STAT_OK:
             raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
-        return None 
+        return None
 
     def rsap(self):
         raise NotImplementedError("yet!")
@@ -482,5 +482,4 @@ class Device(object):
 
     def rsgp(self):
         raise NotImplementedError("yet!")
-
 
