@@ -35,7 +35,7 @@ class Device(object):
         pn = parameter_number
         v = int(value)
         DICT = AXIS_PARAMETER if type(pn) == int else GLOBAL_PARAMETER
-        if not pn in DICT.keys():
+        if not pn in DICT:
             raise TMCLError("{}: parameter number {} not in {}".format(prefix, pn, DICT.keys()))
         name, ranges, _ = DICT[parameter_number]
         NOTINRANGE = False
@@ -143,7 +143,7 @@ class Device(object):
         v = int(value)
         if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
-        if t not in CMD_MVP_TYPES.keys():
+        if t not in CMD_MVP_TYPES:
             raise TMCLError("{}: type {} not in {}".format(t, CMD_MVP_TYPES.keys()))
         if t == 'ABS' and not -MAX_POSITION <= v < MAX_POSITION:
             raise TMCLError("{}: {}: value {} not in range({}, {})".fornat(c, t, v, -MAX_POSITION, MAX_POSITION))
@@ -184,7 +184,7 @@ class Device(object):
         t = str(cmdtype)
         if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
-        if t not in CMD_RFS_TYPES.keys():
+        if t not in CMD_RFS_TYPES:
             raise TMCLError("{}: type {} not in {}".format(t, CMD_RFS_TYPES.keys()))
         t = CMD_RFS_TYPES[t] % (1<<8)
         status, value = self._query((0x01, cn, t, mn, 0x0000))
@@ -380,7 +380,7 @@ class Device(object):
         pn = int(parameter_number)
         if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
-        if pn not in AXIS_PARAMETER.keys():
+        if pn not in AXIS_PARAMETER:
             raise TMCLError("{}: parameter number {} not valid".format(c, pn))
         status, value = self._query((0x01, cn, pn, mn, 0x0000))
         if status != STAT_OK:
@@ -444,7 +444,7 @@ class Device(object):
         pn = int(parameter_number)
         if not 0 <= bn < MAX_BANK:
             raise TMCLError("{}: bank number {} not in range({})".format(c, bn, MAX_BANK))
-        if not (bn, pn) in GLOBAL_PARAMETER.keys():
+        if not (bn, pn) in GLOBAL_PARAMETER:
             raise TMCLError("{}: parameter number {} not valid for bank{}".format(c, pn, bn))
         status, value = self._query((0x01, cn, pn, bn, 0x0000))
         if status != STAT_OK:
@@ -467,7 +467,7 @@ class Device(object):
         if not 0 <= mn < MAX_MOTOR:
             raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
         pn = int(parameter_number)
-        if not pn in AXIS_PARAMETER.keys():
+        if not pn in AXIS_PARAMETER:
             raise TMCLError("{}: parameter number {} not valid".format(c, pn))
         status, value = self._query((0x01, cn, pn, mn, 0x0000))
         if status != STAT_OK:
