@@ -151,7 +151,7 @@ class Device(object):
         # pass 'REL' because we dont know the current pos here
         if t == 'COORDS' and not 0 <= v < MAX_COORDINATE:
             raise TMCLRangeError(c, t + ": value", v, MAX_COORDINATE)
-        t = CMD_MVP_TYPES[t] % (1<<8)
+        t = byte(CMD_MVP_TYPES[t])
         status, value = self._query((0x01, cn, t, mn, v))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
@@ -187,7 +187,7 @@ class Device(object):
             raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         if t not in CMD_RFS_TYPES:
             raise TMCLKeyError(c, "type", t, CMD_RFS_TYPES)
-        t = CMD_RFS_TYPES[t] % (1<<8)
+        t = byte(CMD_RFS_TYPES[t])
         status, value = self._query((0x01, cn, t, mn, 0x0000))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
