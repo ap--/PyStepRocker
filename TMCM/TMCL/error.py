@@ -3,6 +3,7 @@ class TMCLError(Exception):
     """Base TMCL exception"""
 
     def __init__(self, command=None, message=None):
+        super(TMCLError, self).__init__(command, message)
         self.command = command
         self.message = message
 
