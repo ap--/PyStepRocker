@@ -41,7 +41,7 @@ def encodeCommand(parameters, value, debug):
     Calculate the checksum
     Join everything and convert to string
     """
-    bytes = map(byte, parameters)
+    bytes = [byte(p) for p in parameters]
     value = encodeBytes(value)
     bytes += value
     chsum = checksum(bytes)
