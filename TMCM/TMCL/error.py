@@ -1,28 +1,33 @@
 
 class TMCLError(Exception):
-    pass
+
+    def __init__(self, command=None, message=None):
+        self.command = command
+        self.message = message
+
+    def __str__(self):
+        if self.message is None:
+            return "TMCL: {}".format(self.command)
+        else:
+            return "{}: {}".format(self.command, self.message)
 
 
 class TMCLStatusError(TMCLError):
 
     def __init__(self, command, status):
-        self.command = command
+        message = "got status: {}".format(status)
+        super(TMCLStatusError, self).__init__(command, message)
         self.status = status
-
-    def __str__(self):
-        return "{}: got status: {}".format(self.command, self.status)
 
 
 class TMCLMissingElement(TMCLError):
 
     def __init__(self, command, kind, element, container):
-        self.command = command
+        message = "{} {} not in {}".format(kind, element, container)
+        super(TMCLMissingElement, self).__init__(command, message)
         self.kind = kind
         self.element = element
         self.container = container
-
-    def __str__(self):
-            return "{}: {} {} not in {}".format(self.command, self.kind, self.element, self.container)
 
 
 class TMCLKeyError(TMCLMissingElement):
