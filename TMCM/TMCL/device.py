@@ -287,7 +287,7 @@ class Device(object):
             raise TMCLStatusError(c, STATUSCODES[status])
         return value
 
-    def sio(port_number, state):
+    def sio(self, port_number, state):
         """
         tmcl_sio(output_number, state) --> None
 
@@ -308,7 +308,7 @@ class Device(object):
             raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
-    def gio(port_number, bank_number):
+    def gio(self, port_number, bank_number):
         """
         tmcl_gio(port_number, bank_number) --> int
 
