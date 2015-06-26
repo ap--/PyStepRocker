@@ -56,6 +56,8 @@ class Device(object):
         """
         tmcl_ror(motor_number, velocity) --> None
 
+        Rotate Right:
+	-------------
         The motor will be instructed to rotate with a specified velocity
         in right direction (increasing the position counter).
 
@@ -78,6 +80,8 @@ class Device(object):
         """
         tmcl_rol(motor_number, velocity) --> None
 
+        Rotate Left:
+	------------
         With this command the motor will be instructed to rotate with a
         specified velocity (opposite direction compared to tmcl_rol,
         decreasing the position counter).
@@ -101,6 +105,8 @@ class Device(object):
         """
         tmcl_mst(motor_number) --> None
 
+        Motor Stop:
+	-----------
         The motor will be instructed to stop.
 
         TMCL-Mnemonic: MST <motor number>
@@ -119,6 +125,8 @@ class Device(object):
         """
         tmcl_mvp(motor_number, type, value) --> None
 
+        Move to Position:
+	-----------------
         The motor will be instructed to move to a specified relative or
         absolute position or a pre-programmed coordinate. It will use
         the acceleration/deceleration ramp and the positioning speed
@@ -165,6 +173,8 @@ class Device(object):
         """
         tmcl_rfs(motor_number, cmdtype) --> int
 
+        Reference Search:
+	-----------------
         The TMCM-1110 has a built-in reference search algorithm which
         can be used. The reference search algorithm provides switching
         point calibration and three switch modes. The status of the
@@ -201,6 +211,8 @@ class Device(object):
         """
         tmcl_cco(motor_number, coordinate_number) --> None
 
+        Capture Coordinate:
+	-------------------
         The actual position of the axis is copied to the selected
         coordinate variable. Depending on the global parameter 84, the
         coordinates are only stored in RAM or also stored in the EEPROM
@@ -228,6 +240,8 @@ class Device(object):
         """
         tmcl_sco(self, motor_number, coordinate_number, position) --> None
 
+        Set Coordinate:
+	---------------
         Up to 20 position values (coordinates) can be stored for every
         axis for use with the MVP COORD command. This command sets a
         coordinate to a specified value. Depending on the global
@@ -261,6 +275,8 @@ class Device(object):
         """
         tmcl_gco(self, motor_number, coordinate_number) --> int
 
+        Get Coordinate:
+	---------------
         This command makes possible to read out a previously stored
         coordinate. In standalone mode the requested value is copied to
         the accumulator register for further processing purposes such
@@ -292,6 +308,8 @@ class Device(object):
         """
         tmcl_sio(output_number, state) --> None
 
+        Set Output:
+	-----------
         This command sets the status of the general digital output
         either to low (0) or to high (1).
 
@@ -313,6 +331,8 @@ class Device(object):
         """
         tmcl_gio(port_number, bank_number) --> int
 
+        Get Input / Output:
+	-------------------
         With this command the status of the two available general
         purpose inputs of the module can be read out. The function
         reads a digital or analogue input port. Digital lines will read
@@ -344,6 +364,8 @@ class Device(object):
         """
         tmcl_sap(motor_number, parameter_number, value) --> None
 
+        Set Axis Parameter:
+	-------------------
         Most of the motion control parameters of the module can be
         specified with the SAP command. The settings will be stored in
         SRAM and therefore are volatile. That is, information will be
@@ -369,6 +391,8 @@ class Device(object):
         """
         tmcl_gap(self, motor_number, parameter_number) --> int
 
+        Get Axis Parameter:
+	-------------------
         Most parameters of the TMCM-1110 can be adjusted individually
         for the axis. With this parameter they can be read out. In
         standalone mode the requested value is also transferred to the
@@ -396,6 +420,8 @@ class Device(object):
         """
         tmcl_sgp(self, bank_number, parameter_number, value) --> None
 
+        Set Global Parameter:
+	---------------------
         Most of the module specific parameters not directly related to
         motion control can be specified and the TMCLTM user variables
         can be changed. Global parameters are related to the host
@@ -430,6 +456,8 @@ class Device(object):
         """
         tmcl_ggp(self, bank_number, parameter_number) --> int
 
+        Get Global Parameter:
+	---------------------
         All global parameters can be read with this function. Global
         parameters are related to the host interface, peripherals or
         application specific variables. The different groups of these
@@ -460,6 +488,8 @@ class Device(object):
         """
         tmcl_stap(self, motor_number, parameter_number) --> None
 
+        Store Axis Parameter:
+	---------------------
         An axis parameter previously set with a Set Axis Parameter
         command (SAP) will be stored permanent. Most parameters are
         automatically restored after power up.
@@ -480,14 +510,29 @@ class Device(object):
         return None
 
     def rsap(self):
-        """Not yet implemented"""
+        """
+        Restore Axis Parameter:
+	-----------------------
+
+        Not yet implemented
+        """
         raise NotImplementedError("yet!")
 
     def stgp(self):
-        """Not yet implemented"""
+        """
+        Store Global Parameter:
+	-----------------------
+
+        Not yet implemented
+        """
         raise NotImplementedError("yet!")
 
     def rsgp(self):
-        """Not yet implemented"""
+        """
+        Restore Global Parameter:
+	-------------------------
+
+        Not yet implemented
+        """
         raise NotImplementedError("yet!")
 
