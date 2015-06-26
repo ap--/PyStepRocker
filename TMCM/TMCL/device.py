@@ -1,7 +1,7 @@
 
 import serial
 
-from codec import *
+import codec
 from consts import *
 from error import *
 
@@ -22,11 +22,11 @@ class Device(object):
         self._ser = serial.Serial(port)
 
     def _query(self, request):
-        req = encodeRequestCommand(*request)
+        req = codec.encodeRequestCommand(*request)
         if self._debug:
             print "send to TMCL: ", req
         self._ser.write(req)
-        rep = decodeReplyCommand(self._ser.read(9))
+        rep = codec.decodeReplyCommand(self._ser.read(9))
         if self._debug:
             print "got from TMCL: ", rep
         return rep['status'], rep['value']
@@ -151,7 +151,7 @@ class Device(object):
         # pass 'REL' because we dont know the current pos here
         if t == 'COORDS' and not 0 <= v < MAX_COORDINATE:
             raise TMCLRangeError(c, t + ": value", v, MAX_COORDINATE)
-        t = byte(CMD_MVP_TYPES[t])
+        t = codec.byte(CMD_MVP_TYPES[t])
         status, value = self._query((0x01, cn, t, mn, v))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
@@ -187,7 +187,7 @@ class Device(object):
             raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         if t not in CMD_RFS_TYPES:
             raise TMCLKeyError(c, "type", t, CMD_RFS_TYPES)
-        t = byte(CMD_RFS_TYPES[t])
+        t = codec.byte(CMD_RFS_TYPES[t])
         status, value = self._query((0x01, cn, t, mn, 0x0000))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
