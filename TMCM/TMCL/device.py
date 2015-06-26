@@ -36,15 +36,16 @@ class Device(object):
         v = int(value)
         DICT = AXIS_PARAMETER if type(pn) == int else GLOBAL_PARAMETER
         if not pn in DICT:
-            raise TMCLError("{}: parameter number {} not in {}".format(prefix, pn, DICT.keys()))
+            raise TMCLKeyError(prefix, "parameter number", pn, DICT)
         name, ranges, _ = DICT[parameter_number]
         NOTINRANGE = False
         for (l, h) in ranges:
             if not (l <= v < h):
                 NOTINRANGE = True
         if NOTINRANGE:
-            raise TMCLError("{}: parameter {} not in ".format(prefix, name) +
-                            " + ".join(["range({}, {})".format(l, h) for l, h in ranges]))
+            raise TMCLMissingElement(prefix, "parameter", repr(name),
+                                      " + ".join(["range({}, {})".format(l, h)
+                                      for l, h in ranges]))
         return pn, v
 
     def ror(self, motor_number, velocity):
@@ -61,12 +62,12 @@ class Device(object):
         mn = int(motor_number)
         v = int(velocity)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         if not 0 <= v < MAX_VELOCITY:
-            raise TMCLError("{}: velocity {} not in range({})".format(c, v, MAX_VELOCITY))
+            raise TMCLRangeError(c, "velocity", v, MAX_VELOCITY)
         status, value = self._query((0x01, cn, 0x00, mn, v))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def rol(self, motor_number, velocity):
@@ -84,12 +85,12 @@ class Device(object):
         mn = int(motor_number)
         v = int(velocity)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         if not 0 <= v < MAX_VELOCITY:
-            raise TMCLError("{}: velocity {} not in range({})".format(c, v, MAX_VELOCITY))
+            raise TMCLRangeError(c, "velocity", v, MAX_VELOCITY)
         status, value = self._query((0x01, cn, 0x00, mn, v))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def mst(self, motor_number):
@@ -104,10 +105,10 @@ class Device(object):
         cn = NUMBER_COMMANDS[c]
         mn = int(motor_number)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         status, value = self._query((0x01, cn, 0x00, mn, 0x00))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def mvp(self, motor_number, cmdtype, value):
@@ -142,18 +143,18 @@ class Device(object):
         t = str(cmdtype)
         v = int(value)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         if t not in CMD_MVP_TYPES:
-            raise TMCLError("{}: type {} not in {}".format(t, CMD_MVP_TYPES.keys()))
+            raise TMCLKeyError(c, "type", t, CMD_MVP_TYPES)
         if t == 'ABS' and not -MAX_POSITION <= v < MAX_POSITION:
-            raise TMCLError("{}: {}: value {} not in range({}, {})".fornat(c, t, v, -MAX_POSITION, MAX_POSITION))
+            raise TMCLRangeError(c, t + ": value", v, -MAX_POSITION, MAX_POSITION)
         # pass 'REL' because we dont know the current pos here
         if t == 'COORDS' and not 0 <= v < MAX_COORDINATE:
-            raise TMCLError("{}: {}: value {} not in range({})".format(c, t, v, MAX_COORDINATE))
+            raise TMCLRangeError(c, t + ": value", v, MAX_COORDINATE)
         t = CMD_MVP_TYPES[t] % (1<<8)
         status, value = self._query((0x01, cn, t, mn, v))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def rfs(self, motor_number, cmdtype):
@@ -183,13 +184,13 @@ class Device(object):
         mn = int(motor_number)
         t = str(cmdtype)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         if t not in CMD_RFS_TYPES:
-            raise TMCLError("{}: type {} not in {}".format(t, CMD_RFS_TYPES.keys()))
+            raise TMCLKeyError(c, "type", t, CMD_RFS_TYPES)
         t = CMD_RFS_TYPES[t] % (1<<8)
         status, value = self._query((0x01, cn, t, mn, 0x0000))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return value if t == CMD_RFS_TYPES['STATUS'] else 0
 
     def cco(self, motor_number, coordinate_number):
@@ -211,12 +212,12 @@ class Device(object):
         mn = int(motor_number)
         coord_n = int(coordinate_number)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         if not 0 <= coord_n < MAX_COORDINATE:
-            raise TMCLError("{}: coordinate number {} not in range({})".format(c, coord_n, MAX_COORDINATE))
+            raise TMCLRangeError(c, "coordinate number", coord_n, MAX_COORDINATE)
         status, value = self._query((0x01, cn, coord_n, mn, 0x0000))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def sco(self, motor_number, coordinate_number, position):
@@ -240,16 +241,16 @@ class Device(object):
         coord_n = int(coordinate_number)
         pos = int(position)
         if not 0 <= coord_n < MAX_COORDINATE:
-            raise TMCLError("{}: coordinate number {} not in range({})".format(c, coord_n, MAX_COORDINATE))
+            raise TMCLRangeError(c, "coordinate number", coord_n, MAX_COORDINATE)
         if not -MAX_POSITION <= pos < MAX_POSITION:
-            raise TMCLError("{}: position {} not in range({}, {})".format(c, pos, -MAX_POSITION, MAX_POSITION))
+            raise TMCLRangeError(c, "position", pos, -MAX_POSITION, MAX_POSITION)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         elif not (mn == 0xFF and pos == 0):
-            raise TMCLError("{}: special function needs pos == 0".format(c))
+            raise TMCLError("{}: special function requires pos == 0".format(c))
         status, value = self._query((0x01, cn, coord_n, mn, pos))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def gco(self, motor_number, coordinate_number):
@@ -275,14 +276,14 @@ class Device(object):
         mn = int(motor_number)
         coord_n = int(coordinate_number)
         if not 0 <= coord_n < MAX_COORDINATE:
-            raise TMCLError("{}: coordinate number {} not in range({})".format(c, coord_n, MAX_COORDINATE))
+            raise TMCLRangeError(c, "coordinate number", coord_n, MAX_COORDINATE)
         if not (0 <= mn < MAX_MOTOR or mn == 0xFF):
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         elif not (mn == 0xFF and pos == 0):
-            raise TMCLError("{}: special function needs pos == 0".format(c))
+            raise TMCLError("{}: special function requires pos == 0".format(c))
         status, value = self._query((0x01, cn, coord_n, mn, pos))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return value
 
     def sio(port_number, state):
@@ -300,10 +301,10 @@ class Device(object):
         bank = 0x02
         s = bool(state)
         if not 0 <= outp < MAX_OUTPUT[bank]:
-            raise TMCLError("{}: output number {} not in range({})".format(c, outp, MAX_OUTPUT[bank]))
+            raise TMCLRangeError(c, "output number", outp, MAX_OUTPUT[bank])
         status, value = self._query((0x01, cn, outp, bank, s))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def gio(port_number, bank_number):
@@ -325,16 +326,16 @@ class Device(object):
         outp = int(port_number)
         bank = int(bank_number)
         if bank == 0 and not (0 <= outp < MAX_OUTPUT[bank]):
-            raise TMCLError("{}: output number {} not in range({}) @ bank{}".format(c, outp, MAX_OUTPUT[bank], bank))
+            raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, MAX_OUTPUT[bank])
         elif bank == 1 and not (0 <= outp < MAX_OUTPUT[bank]):
-            raise TMCLError("{}: output number {} not in range({}) @ bank{}".format(c, outp, MAX_OUTPUT[bank], bank))
+            raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, MAX_OUTPUT[bank])
         elif bank == 2 and not (0 <= outp < MAX_OUTPUT[bank]):
-            raise TMCLError("{}: output number {} not in range({}) @ bank{}".format(c, outp, MAX_OUTPUT[bank], bank))
+            raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, MAX_OUTPUT[bank])
         else:
-            raise TMCLError("{}: bank number {} not in range({})".format(c, bank, 3))
+            raise TMCLRangeError(c, "bank number", bank, 3)
         status, value = self._query((0x01, cn, outp, bank, 0x0000))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return value
 
     def sap(self, motor_number, parameter_number, value):
@@ -353,11 +354,11 @@ class Device(object):
         cn = NUMBER_COMMANDS[c]
         mn = int(motor_number)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         pn, v = self._pn_checkrange(parameter_number, value, c)
         status, value = self._query((0x01, cn, pn, mn, v))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def gap(self, motor_number, parameter_number):
@@ -379,12 +380,12 @@ class Device(object):
         mn = int(motor_number)
         pn = int(parameter_number)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         if pn not in AXIS_PARAMETER:
-            raise TMCLError("{}: parameter number {} not valid".format(c, pn))
+            raise TMCLKeyError(c, "parameter number", pn, AXIS_PARAMETER)
         status, value = self._query((0x01, cn, pn, mn, 0x0000))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}, while querying: {}".format(c, STATUSCODES[status], pn))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return value
 
     def sgp(self, bank_number, parameter_number, value):
@@ -414,11 +415,11 @@ class Device(object):
         pn = int(parameter_number)
         v = int(value)
         if not 0 <= bn < MAX_BANK:
-            raise TMCLError("{}: bank number {} not in range({})".format(c, bn, MAX_BANK))
+            raise TMCLRangeError(c, "bank number", bn, MAX_BANK)
         pn, v = self._pn_checkrange((bn, pn), v, c)
         status, value = self._query((0x01, cn, pn, bn, v))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def ggp(self, bank_number, parameter_number):
@@ -443,12 +444,12 @@ class Device(object):
         bn = int(bank_number)
         pn = int(parameter_number)
         if not 0 <= bn < MAX_BANK:
-            raise TMCLError("{}: bank number {} not in range({})".format(c, bn, MAX_BANK))
+            raise TMCLRangeError(c, "bank number", bn, MAX_BANK)
         if not (bn, pn) in GLOBAL_PARAMETER:
-            raise TMCLError("{}: parameter number {} not valid for bank{}".format(c, pn, bn))
+            raise TMCLKeyError(c, "parameter number @ bank{}".format(bn), pn, AXIS_PARAMETER)
         status, value = self._query((0x01, cn, pn, bn, 0x0000))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return value
 
     def stap(self, motor_number, parameter_number):
@@ -465,13 +466,13 @@ class Device(object):
         cn = NUMBER_COMMANDS[c]
         mn = int(motor_number)
         if not 0 <= mn < MAX_MOTOR:
-            raise TMCLError("{}: motor number {} not in range({})".format(c, mn, MAX_MOTOR))
+            raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
         pn = int(parameter_number)
         if not pn in AXIS_PARAMETER:
-            raise TMCLError("{}: parameter number {} not valid".format(c, pn))
+            raise TMCLKeyError(c, "parameter number", pn, AXIS_PARAMETER)
         status, value = self._query((0x01, cn, pn, mn, 0x0000))
         if status != STAT_OK:
-            raise TMCLError("{}: got status: {}".format(c, STATUSCODES[status]))
+            raise TMCLStatusError(c, STATUSCODES[status])
         return None
 
     def rsap(self):
