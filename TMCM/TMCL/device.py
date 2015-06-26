@@ -33,7 +33,7 @@ class Device(object):
         return rep['status'], rep['value']
 
     def _pn_checkrange(self, parameter_number, value, prefix):
-        pn = parameter_number
+        pn = int(parameter_number)
         v = int(value)
         DICT = AXIS_PARAMETER if type(pn) == int else GLOBAL_PARAMETER
         if not pn in DICT:
@@ -354,9 +354,11 @@ class Device(object):
         c = 'SAP'
         cn = NUMBER_COMMANDS[c]
         mn = int(motor_number)
+        pn = int(parameter_number)
+        v = int(value)
         if not 0 <= mn < self.MAX_MOTOR:
             raise TMCLRangeError(c, "motor number", mn, self.MAX_MOTOR)
-        pn, v = self._pn_checkrange(parameter_number, value, c)
+        pn, v = self._pn_checkrange(pn, v, c)
         status, value = self._query((0x01, cn, pn, mn, v))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
