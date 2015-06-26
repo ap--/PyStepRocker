@@ -8,6 +8,7 @@ from error import *
 
 
 class Device(object):
+    """Abstraction of a Device that understands TMCL via a serial port"""
 
     def __init__(self, port="/dev/ttyACM0", debug=False,
                  MAX_MOTOR=3, MAX_BANK=4, MAX_OUTPUT=(4, 3, 5),
@@ -23,6 +24,7 @@ class Device(object):
         self.MAX_POSITION = MAX_POSITION
 
     def _query(self, request):
+        """Encode and send a query. Recieve, decode, and return reply"""
         req = codec.encodeRequestCommand(*request)
         if self._debug:
             print "send to TMCL:  ", req
@@ -33,6 +35,7 @@ class Device(object):
         return rep['status'], rep['value']
 
     def _pn_checkrange(self, parameter_number, value, prefix):
+        """Check if value is valid for given parameter_number"""
         pn = int(parameter_number)
         v = int(value)
         DICT = AXIS_PARAMETER if type(pn) == int else GLOBAL_PARAMETER
@@ -477,11 +480,14 @@ class Device(object):
         return None
 
     def rsap(self):
+        """Not yet implemented"""
         raise NotImplementedError("yet!")
 
     def stgp(self):
+        """Not yet implemented"""
         raise NotImplementedError("yet!")
 
     def rsgp(self):
+        """Not yet implemented"""
         raise NotImplementedError("yet!")
 
