@@ -280,9 +280,7 @@ class Device(object):
             raise TMCLRangeError(c, "coordinate number", coord_n, self.MAX_COORDINATE)
         if not (0 <= mn < self.MAX_MOTOR or mn == 0xFF):
             raise TMCLRangeError(c, "motor number", mn, self.MAX_MOTOR)
-        elif not (mn == 0xFF and pos == 0):
-            raise TMCLError(c, "special function requires pos == 0")
-        status, value = self._query((0x01, cn, coord_n, mn, pos))
+        status, value = self._query((0x01, cn, coord_n, mn, 0))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
         return value
