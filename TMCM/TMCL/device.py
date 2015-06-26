@@ -71,7 +71,7 @@ class Device(object):
             raise TMCLRangeError(c, "motor number", mn, self.MAX_MOTOR)
         if not 0 <= v < self.MAX_VELOCITY:
             raise TMCLRangeError(c, "velocity", v, self.MAX_VELOCITY)
-        status, value = self._query((0x01, cn, 0x00, mn, v))
+        status, _ = self._query((0x01, cn, 0x00, mn, v))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
         return None
@@ -96,7 +96,7 @@ class Device(object):
             raise TMCLRangeError(c, "motor number", mn, self.MAX_MOTOR)
         if not 0 <= v < self.MAX_VELOCITY:
             raise TMCLRangeError(c, "velocity", v, self.MAX_VELOCITY)
-        status, value = self._query((0x01, cn, 0x00, mn, v))
+        status, _ = self._query((0x01, cn, 0x00, mn, v))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
         return None
@@ -116,7 +116,7 @@ class Device(object):
         mn = int(motor_number)
         if not 0 <= mn < self.MAX_MOTOR:
             raise TMCLRangeError(c, "motor number", mn, self.MAX_MOTOR)
-        status, value = self._query((0x01, cn, 0x00, mn, 0x00))
+        status, _ = self._query((0x01, cn, 0x00, mn, 0x00))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
         return None
@@ -231,7 +231,7 @@ class Device(object):
             raise TMCLRangeError(c, "motor number", mn, self.MAX_MOTOR)
         if not 0 <= coord_n < self.MAX_COORDINATE:
             raise TMCLRangeError(c, "coordinate number", coord_n, self.MAX_COORDINATE)
-        status, value = self._query((0x01, cn, coord_n, mn, 0x0000))
+        status, _ = self._query((0x01, cn, coord_n, mn, 0x0000))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
         return None
@@ -266,7 +266,7 @@ class Device(object):
             raise TMCLRangeError(c, "motor number", mn, self.MAX_MOTOR)
         elif not (mn == 0xFF and pos == 0):
             raise TMCLError(c, "special function requires pos == 0")
-        status, value = self._query((0x01, cn, coord_n, mn, pos))
+        status, _ = self._query((0x01, cn, coord_n, mn, pos))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
         return None
@@ -322,7 +322,7 @@ class Device(object):
         s = bool(state)
         if not 0 <= outp < self.MAX_OUTPUT[bank]:
             raise TMCLRangeError(c, "output number", outp, self.MAX_OUTPUT[bank])
-        status, value = self._query((0x01, cn, outp, bank, s))
+        status, _ = self._query((0x01, cn, outp, bank, s))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
         return None
@@ -504,7 +504,7 @@ class Device(object):
             raise TMCLRangeError(c, "motor number", mn, self.MAX_MOTOR)
         if not pn in AXIS_PARAMETER:
             raise TMCLKeyError(c, "parameter number", pn, AXIS_PARAMETER)
-        status, value = self._query((0x01, cn, pn, mn, 0x0000))
+        status, _ = self._query((0x01, cn, pn, mn, 0x0000))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
         return None
