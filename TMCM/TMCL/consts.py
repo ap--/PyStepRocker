@@ -6,7 +6,8 @@ STATUSCODES = { 100 : "Succesfully executed, no error",
                   3 : "Wrong type",
                   4 : "Invalid value",
                   5 : "Configuration EEPROM locked",
-                  6 : "Command not available" }
+                  6 : "Command not available"
+              }
 
 STAT_OK = 100
 
@@ -21,32 +22,33 @@ COMMAND_NUMBERS = {  1 : "ROR",    2 : "ROL",    3 : "MST",
                     28 : "STOP",  30 : "SCO",   31 : "GCO",
                     32 : "CCO",   33 : "CALCX", 34 : "AAP",
                     35 : "AGP",   37 : "VECT",  38 : "RETI",
-                    39 : "ACO" 
+                    39 : "ACO"
                   }
 
 NUMBER_COMMANDS = dict([(v, k) for k, v in COMMAND_NUMBERS.iteritems()])
 
-INTERRUPT_VECTORS = {  0 : "Timer 0",
-                       1 : "Timer 1",
-                       2 : "Timer 2",
-                       3 : "Target position reached",
-                      15 : "stallGuard",
-                      21 : "Deviation",
-                      27 : "Left stop switch",
-                      28 : "Right stop switch",
-                      39 : "Input change 0",
-                      40 : "Input change 1",
-                     255 : "Global interrupts" }
+INTERRUPT_VECTORS = {   0 : "Timer 0",
+                        1 : "Timer 1",
+                        2 : "Timer 2",
+                        3 : "Target position reached",
+                       15 : "stallGuard",
+                       21 : "Deviation",
+                       27 : "Left stop switch",
+                       28 : "Right stop switch",
+                       39 : "Input change 0",
+                       40 : "Input change 1",
+                      255 : "Global interrupts"
+                    }
 
-CMD_MVP_TYPES = { 'ABS' : 0,
-                  'REL' : 1,
-                  'COORDS' : 2 }
-CMD_RFS_TYPES = { 'START' : 0,
-                  'STOP' : 1,
-                  'STATUS' : 2 }
+CMD_MVP_TYPES = { 'ABS'    : 0,
+                  'REL'    : 1,
+                  'COORDS' : 2
+                }
 
-
-
+CMD_RFS_TYPES = { 'START'  : 0,
+                  'STOP'   : 1,
+                  'STATUS' : 2
+                }
 
 
 TR_24s = [(-2**23+1, 2**23)]
@@ -57,20 +59,20 @@ TR_12s = [(-2**11+1, 2**11)]
 TR_12u = [(0, 2**12)]
 TR_11u = [(0, 2**11)]
 TR_10u = [(0, 2**10)]
-TR_8u = [(0, 2**8)]
-TR_7s = [(-2**6, 2**6)]
-TR_5u = [(0, 2**5)]
-TR_1u = [(0, 2**1)]
-TR_m3 = [(0, 3)]
-TR_m4 = [(0, 4)]
-TR_m9 = [(0, 9)]
+TR_8u  = [(0, 2**8)]
+TR_7s  = [(-2**6, 2**6)]
+TR_5u  = [(0, 2**5)]
+TR_1u  = [(0, 2**1)]
+TR_m3  = [(0, 3)]
+TR_m4  = [(0, 4)]
+TR_m9  = [(0, 9)]
 TR_m12 = [(0, 14)]
 TR_m14 = [(0, 14)]
 TR_m16 = [(0, 16)]
 
 TR_xCHP0 = [(-3, 13)]
 TR_xCHP1 = [(0, 1), (2, 16)]
-TR_xSE0 = [(1, 4)]
+TR_xSE0  = [(1, 4)]
 TR_xRFS0 = [(1, 9)]
 TR_xRFS1 = [(0, 8388307)]
 TR_xPWR0 = [(1, 2**16)]
@@ -79,7 +81,7 @@ TR_xRND0 = [(0, 2**31)]
 T_R = 4
 T_W = 2
 T_E = 1
-T_RW = T_R+T_W
+T_RW = T_R + T_W
 T_RWE = T_RW + T_E
 
 
@@ -140,11 +142,9 @@ AXIS_PARAMETER = {   0 : ("target position", TR_24s, T_RW),
                    210 : ("encoder prescaler", TR_16u, T_RWE), # that one isnt really correct
                    212 : ("encoder max deviation", TR_16u, T_RWE),
                    214 : ("power down delay", TR_xPWR0, T_RWE)
-                }
+                 }
 
-SINGLE_AXIS_PARAMETERS = [140]+range(160, 184)
-
-
+SINGLE_AXIS_PARAMETERS = [140] + range(160, 184)
 
 GLOBAL_PARAMETER = { (0, 64) : ("EEPROM magic", TR_8u, T_RWE),
                      (0, 65) : ("RS485 baud rate", TR_m12, T_RWE),
@@ -168,7 +168,7 @@ GLOBAL_PARAMETER = { (0, 64) : ("EEPROM magic", TR_8u, T_RWE),
                    }
 
 # add general purpose registers
-for b, p, a in zip([2]*256, range(256), ([T_RWE]*56)+([T_RW]*200)):
+for b, p, a in zip([2]*256, range(256), ([T_RWE]*56) + ([T_RW]*200)):
     GLOBAL_PARAMETER[(2, p)] = ("general purpose reg#{0:0>3d}".format(p), TR_32s, a)
 
 
