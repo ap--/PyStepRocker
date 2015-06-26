@@ -24,7 +24,7 @@ class Device(object):
     def _query(self, request):
         req = codec.encodeRequestCommand(*request)
         if self._debug:
-            print "send to TMCL: ", req
+            print "send to TMCL:  ", req
         self._ser.write(req)
         rep = codec.decodeReplyCommand(self._ser.read(9))
         if self._debug:
@@ -465,9 +465,9 @@ class Device(object):
         c = 'STAP'
         cn = NUMBER_COMMANDS[c]
         mn = int(motor_number)
+        pn = int(parameter_number)
         if not 0 <= mn < MAX_MOTOR:
             raise TMCLRangeError(c, "motor number", mn, MAX_MOTOR)
-        pn = int(parameter_number)
         if not pn in AXIS_PARAMETER:
             raise TMCLKeyError(c, "parameter number", pn, AXIS_PARAMETER)
         status, value = self._query((0x01, cn, pn, mn, 0x0000))
