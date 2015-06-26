@@ -1,5 +1,6 @@
 
 class TMCLError(Exception):
+    """Base TMCL exception"""
 
     def __init__(self, command=None, message=None):
         self.command = command
@@ -13,6 +14,7 @@ class TMCLError(Exception):
 
 
 class TMCLStatusError(TMCLError):
+    """TMCL exception for non-OK statuses"""
 
     def __init__(self, command, status):
         message = "got status: {}".format(status)
@@ -21,6 +23,7 @@ class TMCLStatusError(TMCLError):
 
 
 class TMCLMissingElement(TMCLError):
+    """Base TMCL exception for missing elements in containers"""
 
     def __init__(self, command, kind, element, container):
         message = "{} {} not in {}".format(kind, element, container)
@@ -31,6 +34,7 @@ class TMCLMissingElement(TMCLError):
 
 
 class TMCLKeyError(TMCLMissingElement):
+    """TMCL exception for missing key in dictionary"""
 
     def __init__(self, command, kind, key, dictionary):
         super(TMCLKeyError, self).__init__(command, kind, key, dictionary.keys())
@@ -39,6 +43,7 @@ class TMCLKeyError(TMCLMissingElement):
 
 
 class TMCLRangeError(TMCLMissingElement):
+    """TMCL exception for missing value in range"""
 
     def __init__(self, command, kind, value, limit, other_limit=None):
 
