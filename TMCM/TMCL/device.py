@@ -354,7 +354,7 @@ class Device(object):
         elif bank == 2 and not (0 <= outp < self.MAX_OUTPUT[bank]):
             raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, self.MAX_OUTPUT[bank])
         else:
-            raise TMCLRangeError(c, "bank number", bank, 3)
+            raise TMCLRangeError(c, "bank number", bank, len(self.MAX_OUTPUT))
         status, value = self._query((0x01, cn, outp, bank, 0x0000))
         if status != STAT_OK:
             raise TMCLStatusError(c, STATUSCODES[status])
