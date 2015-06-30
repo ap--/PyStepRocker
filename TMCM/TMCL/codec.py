@@ -86,7 +86,7 @@ def decodeCommand(cmd_string):
     if len(byte_array) != COMMAND_STRING_LENGTH:
         raise TMCLError("Command-string length ({} bytes) does not equal {} bytes".format(len(byte_array), COMMAND_STRING_LENGTH))
     if byte_array[8] != checksum(byte_array[:8]):
-        raise TMCLError("Checksum error in command {}".format(cmd_string))
+        raise TMCLError("Checksum error in command {}: {} != {}".format(cmd_string, byte_array[8], checksum(byte_array[:8])))
     return byte_array
 
 
