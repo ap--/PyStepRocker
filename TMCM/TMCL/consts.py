@@ -25,7 +25,7 @@ COMMAND_NUMBERS = {  1 : "ROR",    2 : "ROL",    3 : "MST",
                     39 : "ACO"
                   }
 
-NUMBER_COMMANDS = dict([(v, k) for k, v in COMMAND_NUMBERS.iteritems()])
+NUMBER_COMMANDS = {v:k for k, v in COMMAND_NUMBERS.iteritems()}
 
 INTERRUPT_VECTORS = {   0 : "Timer 0",
                         1 : "Timer 1",
