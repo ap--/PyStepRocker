@@ -3,6 +3,8 @@ from error import *
 
 
 COMMAND_STRING_LENGTH = 9
+REQUEST_KEYS = ['module-address', 'command-number', 'type-number', 'motor-number']
+REPLY_KEYS = ['reply-address', 'module-address', 'status', 'command-number']
 
 
 def byte(n):
@@ -56,37 +58,34 @@ def encodeCommand(parameters, value, debug=False):
 
 
 def decodeRequestCommand(cmd_string):
-    """Decode a request using decodeCommand, fill dict with result"""
-    byte_array = decodeCommand(cmd_string)
-    ret = {}
-    ret['module-address'] = byte_array[0]
-    ret['command-number'] = byte_array[1]
-    ret['type-number']    = byte_array[2]
-    ret['motor-number']   = byte_array[3]
-    ret['value']          = decodeBytes(byte_array[4:8])
-    ret['checksum']       = byte_array[8]
-    return ret
+    """Decode a request using decodeCommand"""
+    return decodeCommand(cmd_string, REQUEST_KEYS)
 
 def decodeReplyCommand(cmd_string):
-    """Decode a reply using decodeCommand, fill dict with result"""
-    byte_array = decodeCommand(cmd_string)
-    ret = {}
-    ret['reply-address']  = byte_array[0]
-    ret['module-address'] = byte_array[1]
-    ret['status']         = byte_array[2]
-    ret['command-number'] = byte_array[3]
-    ret['value']          = decodeBytes(byte_array[4:8])
-    ret['checksum']       = byte_array[8]
-    return ret
+    """Decode a reply using decodeCommand"""
+    return decodeCommand(cmd_string, REPLY_KEYS)
 
 
-def decodeCommand(cmd_string):
-    """Convert command string to byte list with some checks"""
+def decodeCommand(cmd_string, keys):
+    """
+    Decode a command string:
+    Convert command string to byte list
+    Do some checks on string length and checksum
+    Fill dict with result according to keys
+    """
     byte_array = bytearray(cmd_string)
     if len(byte_array) != COMMAND_STRING_LENGTH:
         raise TMCLError("Command-string length ({} bytes) does not equal {} bytes".format(len(byte_array), COMMAND_STRING_LENGTH))
     if byte_array[8] != checksum(byte_array[:8]):
         raise TMCLError("Checksum error in command {}: {} != {}".format(cmd_string, byte_array[8], checksum(byte_array[:8])))
-    return byte_array
+
+    result = {}
+    for i, k in enumerate(keys):
+        result[k] = byte_array[i]
+
+    result['value'] = decodeBytes(byte_array[4:8])
+    result['checksum'] = byte_array[8]
+
+    return result
 
 
