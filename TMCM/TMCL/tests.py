@@ -144,16 +144,30 @@ class CodecTestCase(unittest.TestCase):
 
 
 
-
-
     def test_encodeCommand(self):
-        pass
+        string = "ABCD\x00\x00\x00EO"
+        params = [ord(s) for s in string[:4]]
+        values = ord(string[7])
+#        values = sum(ord(s) for s in string[4:8])
+
+        new_string = codec.encodeCommand(params, values)
+        self.assertEqual(string, new_string)
+
 
     def test_decodeCommand(self):
-        pass
+        keys = range(4)
+        string = "ABCD\x00\x00\x00EO"
 
+        result = codec.decodeCommand(string, keys)
 
+        for i, k in enumerate(keys):
+            self.assertEqual(ord(string[i]), result[k])
 
+        values = sum(ord(s) for s in string[4:8])
+        self.assertEqual(values, result['value'])
+
+        self.assertEqual(ord(string[7]), result['value'])
+        self.assertEqual(ord(string[8]), result['checksum'])
 
 
     def test_encdecCommand(self):
@@ -186,7 +200,7 @@ class CodecTestCase(unittest.TestCase):
             self.assertEqual(string[:4],  new_string[:4])  # parameter part
             self.assertEqual(string[4:8], new_string[4:8]) # value part
             self.assertEqual(string[8],   new_string[8])   # checksum part
-
+            self.assertEqual(string,      new_string)
 
 
 
