@@ -27,14 +27,14 @@ def decodeBytes(bytes, max_i=3):
 
 def encodeRequestCommand(m_address, n_command, n_type, n_motor, value, debug=False):
     """Encode a request using encodeCommand"""
-    return encodeCommand([m_address, n_command, n_type, n_motor], value, debug)
+    return encodeCommand([m_address, n_command, n_type, n_motor], value, debug=debug)
 
 def encodeReplyCommand(r_address, m_address, status, n_command, value, debug=False):
     """Encode a reply using encodeCommand"""
-    return encodeCommand([r_address, m_address, status, n_command], value, debug)
+    return encodeCommand([r_address, m_address, status, n_command], value, debug=debug)
 
 
-def encodeCommand(parameters, value, debug):
+def encodeCommand(parameters, value, debug=False):
     """
     Encode a command string:
     Convert parameters and value to byte lists
