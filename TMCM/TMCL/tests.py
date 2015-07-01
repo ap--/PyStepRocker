@@ -14,8 +14,12 @@ REPLY_KEYS   = codec.REPLY_KEYS   + ['value']
 
 class CodecTestCase(unittest.TestCase):
 
+
+    def _gen_byte(self):
+        return rnd.randint(0, 255)
+
     def _gen_bytes(self, length=5):
-        return [rnd.randint(0, 255) for _ in xrange(length)]
+        return [self._gen_byte() for _ in xrange(length)]
 
     def _gen_number(self, length=None):
         if length is None:
@@ -137,6 +141,53 @@ class CodecTestCase(unittest.TestCase):
 
     def test_decencReplyCommand(self):
         self._help_test_decencReALLCommand(codec.encodeReplyCommand, codec.decodeReplyCommand, REPLY_KEYS)
+
+
+
+
+
+    def test_encodeCommand(self):
+        pass
+
+    def test_decodeCommand(self):
+        pass
+
+
+
+
+
+    def test_encdecCommand(self):
+        keys = range(4)
+        for _ in xrange(MAXITER):
+            params = self._gen_bytes(length=4)
+            values = self._gen_byte()
+            chksum = sum(params, values) % 256
+
+            string = codec.encodeCommand(params, values)
+            result = codec.decodeCommand(string, keys)
+
+            for i, k in enumerate(keys):
+                self.assertEqual(params[i], result[k])
+
+            self.assertEqual(values, result['value'])
+            self.assertEqual(chksum, result['checksum'])
+
+
+    def test_decencCommand(self):
+        keys = range(4)
+        for _ in xrange(MAXITER):
+            string = self._gen_cmd_string()
+
+            decoded = codec.decodeCommand(string, keys)
+            params = [decoded[k] for k in keys]
+            values = decoded['value']
+            new_string = codec.encodeCommand(params, values)
+
+            self.assertEqual(string[:4],  new_string[:4])  # parameter part
+            self.assertEqual(string[4:8], new_string[4:8]) # value part
+            self.assertEqual(string[8],   new_string[8])   # checksum part
+
+
 
 
 
