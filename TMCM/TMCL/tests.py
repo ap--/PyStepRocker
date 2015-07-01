@@ -88,21 +88,39 @@ class CodecTestCase(unittest.TestCase):
 
 
 
+    def _help_test_encodeReAllCommand(self, encoder, decoder, keys):
+        string = "ABCD\x00\x00\x00EO"
+        values = [ord(s) for s in string]
+
+        result = encoder(values[0], values[1], values[2], values[3], sum(values[4:8]))
+        self.assertEqual(string, result)
+
+
+    def _help_test_decodeReAllCommand(self, encoder, decoder, keys):
+        string = "ABCD\x00\x00\x00EO"
+        result = decoder(string)
+
+        for i, k in enumerate(keys[:4]):
+            self.assertEqual(ord(string[i]), result[k])
+
+        values = sum(ord(s) for s in string[4:8])
+        self.assertEqual(values, result['value'])
+
+        self.assertEqual(ord(string[7]), result['value'])
+        self.assertEqual(ord(string[8]), result['checksum'])
 
 
     def test_encodeRequestCommand(self):
-        pass
+        self._help_test_encodeReAllCommand(codec.encodeRequestCommand, codec.decodeRequestCommand, REQUEST_KEYS)
 
     def test_decodeRequestCommand(self):
-        pass
+        self._help_test_decodeReAllCommand(codec.encodeRequestCommand, codec.decodeRequestCommand, REQUEST_KEYS)
 
     def test_encodeReplyCommand(self):
-        pass
+        self._help_test_encodeReAllCommand(codec.encodeReplyCommand, codec.decodeReplyCommand, REPLY_KEYS)
 
     def test_decodeReplyCommand(self):
-        pass
-
-
+        self._help_test_decodeReAllCommand(codec.encodeReplyCommand, codec.decodeReplyCommand, REPLY_KEYS)
 
 
 
