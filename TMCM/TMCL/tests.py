@@ -15,11 +15,17 @@ REPLY_KEYS   = codec.REPLY_KEYS   + ['value']
 class CodecTestCase(unittest.TestCase):
 
 
-    def _gen_byte(self):
-        return rnd.randint(0, 255)
+    def _gen_byte(self, min_i=0, max_i=256):
+        return rnd.randint(min_i, max_i-1)
 
     def _gen_bytes(self, length=5):
         return [self._gen_byte() for _ in xrange(length)]
+
+    def _gen_pos_bytes(self, length=5):
+        return [self._gen_byte(max_i=128)] + self._gen_bytes(length-1)
+
+    def _gen_neg_bytes(self, length=5):
+        return [self._gen_byte(min_i=128)] + self._gen_bytes(length-1)
 
     def _gen_number(self, length=None):
         if length is None:
@@ -81,6 +87,24 @@ class CodecTestCase(unittest.TestCase):
     def test_decencBytes(self):
         for _ in xrange(MAXITER):
             bytes = self._gen_bytes(length=4)
+            value = codec.decodeBytes(bytes)
+            new_bytes = codec.encodeBytes(value)
+
+            self.assertEqual(bytes, new_bytes)
+
+
+    def test_decencNegBytes(self):
+        for _ in xrange(MAXITER):
+            bytes = self._gen_neg_bytes(length=4)
+            value = codec.decodeBytes(bytes)
+            new_bytes = codec.encodeBytes(value)
+
+            self.assertEqual(bytes, new_bytes)
+
+
+    def test_decencPosBytes(self):
+        for _ in xrange(MAXITER):
+            bytes = self._gen_pos_bytes(length=4)
             value = codec.decodeBytes(bytes)
             new_bytes = codec.encodeBytes(value)
 
