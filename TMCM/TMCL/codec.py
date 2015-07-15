@@ -2,9 +2,26 @@
 from error import *
 
 
+SIGN_BIT = 7
 COMMAND_STRING_LENGTH = 9
 REQUEST_KEYS = ['module-address', 'command-number', 'type-number', 'motor-number']
 REPLY_KEYS = ['reply-address', 'module-address', 'status', 'command-number']
+
+
+
+def is_sign_bit_set(value, bit=SIGN_BIT):
+    """Test if sign bit is set in value"""
+    return value & (1<<bit) != 0
+
+def set_sign_bit(value, bit=SIGN_BIT):
+    """Set sign bit to 1 (negative) in value"""
+    res = value | (1<<bit)
+    return res
+
+def clear_sign_bit(value, bit=SIGN_BIT):
+    """Set sign bit to 0 (positive) in value"""
+    res = value & ~(1<<bit)
+    return res
 
 
 def byte(n):
@@ -18,13 +35,32 @@ def checksum(bytes):
 
 
 def encodeBytes(value, max_i=3):
-    """Encode a value to a byte list"""
-    return [byte(int(value) >> i*8) for i in range(max_i, -1, -1)]
+    """
+	Encode a value to a byte list
+	Sets the MSB for negative value
+	"""
+    bytes = [byte(int(abs(value)) >> i*8) for i in range(max_i, -1, -1)]
+
+    if value < 0:
+        bytes[0] = set_sign_bit(bytes[0])
+
+    return bytes
+
 
 def decodeBytes(bytes, max_i=3):
-    """Decode a byte list to a value"""
-    return sum(b << (max_i-i)*8 for i, b in enumerate(bytes))
+    """
+	Decode a byte list to a value
+	Returns a negative value when MSB is set
+	"""
+    # bytes is mutable, hence changes would alter the original, thus make a copy:
+    bytes = list(bytes)
 
+    sign = +1
+    if is_sign_bit_set(bytes[0]):
+        sign = -1
+        bytes[0] = clear_sign_bit(bytes[0])
+
+    return sign * sum(b << (max_i-i)*8 for i, b in enumerate(bytes))
 
 
 def encodeRequestCommand(m_address, n_command, n_type, n_motor, value, debug=False):
