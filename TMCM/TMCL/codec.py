@@ -15,13 +15,11 @@ def is_sign_bit_set(value, bit=SIGN_BIT):
 
 def set_sign_bit(value, bit=SIGN_BIT):
     """Set sign bit to 1 (negative) in value"""
-    res = value | (1<<bit)
-    return res
+    return value | (1<<bit)
 
 def clear_sign_bit(value, bit=SIGN_BIT):
     """Set sign bit to 0 (positive) in value"""
-    res = value & ~(1<<bit)
-    return res
+    return value & ~(1<<bit)
 
 
 def byte(n):
