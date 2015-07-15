@@ -53,20 +53,20 @@ class CodecTestCase(unittest.TestCase):
         value = 123456789
 
         bytes = codec.encodeBytes(value)
-        self.assertEqual(bytes, [7, 91, 205, 21])
+        self.assertEqual([7, 91, 205, 21], bytes)
 
         new_value = codec.decodeBytes(bytes)
-        self.assertEqual(new_value, value)
+        self.assertEqual(value, new_value)
 
 
     def test_decodeBytes(self):
         bytes = [1, 2, 3, 4]
 
         value = codec.decodeBytes(bytes)
-        self.assertEqual(value, 16909060)
+        self.assertEqual(16909060, value)
 
         new_bytes = codec.encodeBytes(value)
-        self.assertEqual(new_bytes, bytes)
+        self.assertEqual(bytes, new_bytes)
 
 
     def test_encdecBytes(self):
@@ -75,7 +75,7 @@ class CodecTestCase(unittest.TestCase):
             bytes = codec.encodeBytes(value)
             new_value = codec.decodeBytes(bytes)
 
-            self.assertEqual(new_value, value)
+            self.assertEqual(value, new_value)
 
 
     def test_decencBytes(self):
@@ -84,7 +84,7 @@ class CodecTestCase(unittest.TestCase):
             value = codec.decodeBytes(bytes)
             new_bytes = codec.encodeBytes(value)
 
-            self.assertEqual(new_bytes, bytes)
+            self.assertEqual(bytes, new_bytes)
 
 
 
