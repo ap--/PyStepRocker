@@ -43,6 +43,29 @@ class CodecTestCase(unittest.TestCase):
         return string
 
 
+    def test_bit_operations(self):
+        for i in xrange(128):
+            i_s = codec.set_sign_bit(i)
+            i_c = codec.clear_sign_bit(i_s)
+
+            self.assertEqual(i, i_c)
+            self.assertEqual(i + 128, i_s)
+
+            self.assertFalse(codec.is_sign_bit_set(i))
+            self.assertTrue(codec.is_sign_bit_set(i_s))
+            self.assertFalse(codec.is_sign_bit_set(i_c))
+
+        for i in xrange(128, 256):
+            i_c = codec.clear_sign_bit(i)
+            i_s = codec.set_sign_bit(i_c)
+
+            self.assertEqual(i, i_s)
+            self.assertEqual(i - 128, i_c)
+
+            self.assertTrue(codec.is_sign_bit_set(i))
+            self.assertFalse(codec.is_sign_bit_set(i_c))
+            self.assertTrue(codec.is_sign_bit_set(i_s))
+
 
     def test_byte(self):
         for i in xrange(MAXITER):
