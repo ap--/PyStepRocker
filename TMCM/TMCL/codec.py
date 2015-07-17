@@ -34,9 +34,9 @@ def checksum(bytes):
 
 def encodeBytes(value, max_i=3):
     """
-	Encode a value to a byte list
-	Sets the MSB for negative value
-	"""
+    Encode a value to a byte list
+    Sets the MSB for negative value
+    """
     bytes = [byte(int(abs(value)) >> i*8) for i in range(max_i, -1, -1)]
 
     if value < 0:
@@ -47,9 +47,9 @@ def encodeBytes(value, max_i=3):
 
 def decodeBytes(bytes, max_i=3):
     """
-	Decode a byte list to a value
-	Returns a negative value when MSB is set
-	"""
+    Decode a byte list to a value
+    Returns a negative value when MSB is set
+    """
     # bytes is mutable, hence changes would alter the original, thus make a copy:
     bytes = list(bytes)
 
