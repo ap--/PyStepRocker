@@ -4,24 +4,10 @@ from collections import OrderedDict
 from error import *
 
 
-SIGN_BIT = 7
 COMMAND_STRING_LENGTH = 9
 REQUEST_KEYS = ['module-address', 'command-number', 'type-number', 'motor-number']
 REPLY_KEYS = ['reply-address', 'module-address', 'status', 'command-number']
 
-
-
-def is_sign_bit_set(value, bit=SIGN_BIT):
-    """Test if sign bit is set in value"""
-    return value & (1<<bit) != 0
-
-def set_sign_bit(value, bit=SIGN_BIT):
-    """Set sign bit to 1 (negative) in value"""
-    return value | (1<<bit)
-
-def clear_sign_bit(value, bit=SIGN_BIT):
-    """Set sign bit to 0 (positive) in value"""
-    return value & ~(1<<bit)
 
 
 def byte(n):
@@ -37,30 +23,25 @@ def checksum(bytes):
 def encodeBytes(value, max_i=3):
     """
     Encode a value to a byte list
-    Sets the MSB for negative value
+    If value negative, shift above 2**31 by adding 2**32
     """
-    bytes = [byte(int(abs(value)) >> i*8) for i in range(max_i, -1, -1)]
-
     if value < 0:
-        bytes[0] = set_sign_bit(bytes[0])
+        value += (1<<32)
 
-    return bytes
+    return [byte(int(value) >> i*8) for i in range(max_i, -1, -1)]
 
 
 def decodeBytes(bytes, max_i=3):
     """
     Decode a byte list to a value
-    Returns a negative value when MSB is set
+    If value larger than allowed positive values (0 to 2**31), subtract 2**32
     """
-    # bytes is mutable, hence changes would alter the original, thus make a copy:
-    bytes = list(bytes)
+    value = sum(b << (max_i-i)*8 for i, b in enumerate(bytes))
 
-    sign = +1
-    if is_sign_bit_set(bytes[0]):
-        sign = -1
-        bytes[0] = clear_sign_bit(bytes[0])
+    if not value < (1<<31):
+        value -= (1<<32)
 
-    return sign * sum(b << (max_i-i)*8 for i, b in enumerate(bytes))
+    return value
 
 
 def encodeRequestCommand(m_address, n_command, n_type, n_motor, value, debug=False):
