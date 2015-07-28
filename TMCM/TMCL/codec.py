@@ -123,3 +123,11 @@ def decodeCommand(cmd_string, keys):
     return result
 
 
+
+def hexString(cmd):
+    """Convert encoded command string to human-readable string of hex values"""
+    s = ['{:x}'.format(i).rjust(2) for i in list(bytearray(cmd))]
+    return  "[" + ", ".join(s) + "]"
+
+
+
