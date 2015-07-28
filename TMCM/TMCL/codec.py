@@ -20,26 +20,30 @@ def checksum(bytes):
     return byte(sum(bytes))
 
 
-def encodeBytes(value, max_i=3):
+def encodeBytes(value, num_bytes=4):
     """
     Encode a value to a byte list
-    If value negative, shift above 2**31 by adding 2**32
+    If value negative, add m = 2**(8*num_bytes) to shift above m/2
     """
+    max_value = 1 << (8 * num_bytes)
+
     if value < 0:
-        value += (1<<32)
+        value += max_value
 
-    return [byte(int(value) >> i*8) for i in range(max_i, -1, -1)]
+    return [byte(int(value) >> i*8) for i in reversed(xrange(num_bytes))]
 
 
-def decodeBytes(bytes, max_i=3):
+def decodeBytes(bytes):
     """
     Decode a byte list to a value
-    If value larger than allowed positive values (0 to 2**31), subtract 2**32
+    If value above allowed positive values (0 to m/2), subtract m = 2**(8*len(bytes))
     """
-    value = sum(b << (max_i-i)*8 for i, b in enumerate(bytes))
+    max_value = 1 << (8 * len(bytes))
 
-    if not value < (1<<31):
-        value -= (1<<32)
+    value = sum(b << i*8 for i, b in enumerate(reversed(bytes)))
+
+    if value >= max_value/2:
+        value -= max_value
 
     return value
 
