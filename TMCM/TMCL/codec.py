@@ -113,7 +113,7 @@ def decodeCommand(cmd_string, keys):
     if byte_array[8] != checksum(byte_array[:8]):
         raise TMCLError("Checksum error in command {}: {} != {}".format(cmd_string, byte_array[8], checksum(byte_array[:8])))
 
-    result = {}
+    result = OrderedDict()
     for i, k in enumerate(keys):
         result[k] = byte_array[i]
 
