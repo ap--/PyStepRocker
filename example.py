@@ -4,14 +4,17 @@ import time
 from TMCM import StepRocker
 
 
-rocker = StepRocker(24, port='/dev/ttyACM0')
-rocker.set_important_parameters(maxspeed=1000,
-                                maxaccel=10,
-                                maxcurrent=50,
+rocker = StepRocker(debug=True)
+rocker.set_important_parameters(max_speed=1000,
+                                max_accel=10,
+                                max_current=50,
                                 standbycurrent=10,
                                 microstep_resolution=4)
 
-rocker.rotate(10.)
+rocker.get_globals()
+rocker.get_parameters()
+
+rocker.rotate(10., steps=24)
 time.sleep(10)
 rocker.stop()
 
