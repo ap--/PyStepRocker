@@ -138,8 +138,8 @@ AXIS_PARAMETER = {   0 : ("target position", TR_24s, T_RW),
                    204 : ("freewheeling", TR_16u, T_RWE),
                    206 : ("actual load value", TR_10u, T_R),
                    208 : ("TMC262 errorflags", TR_8u, T_R),
-                   209 : ("encoder pos", TR_24s, T_RW),
-                   210 : ("encoder prescaler", TR_16u, T_RWE), # that one isnt really correct
+    #Wrong type?? #209 : ("encoder pos", TR_24s, T_RW),
+    #Wrong type?? #210 : ("encoder prescaler", TR_16u, T_RWE),
                    212 : ("encoder max deviation", TR_16u, T_RWE),
                    214 : ("power down delay", TR_xPWR0, T_RWE)
                  }
