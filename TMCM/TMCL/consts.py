@@ -146,25 +146,25 @@ AXIS_PARAMETER = {   0 : ("target position", TR_24s, T_RW),
 
 SINGLE_AXIS_PARAMETERS = [140] + range(160, 184)
 
-GLOBAL_PARAMETER = { (0, 64) : ("EEPROM magic", TR_8u, T_RWE),
-                     (0, 65) : ("RS485 baud rate", TR_m12, T_RWE),
-                     (0, 66) : ("serial address", TR_8u, T_RWE),
-                     (0, 73) : ("EEPROM lock flag", TR_1u, T_RWE),
-                     (0, 75) : ("telegram pause time", TR_8u, T_RWE),
-                     (0, 76) : ("serial host adress", TR_8u, T_RWE),
-                     (0, 77) : ("auto start mode", TR_1u, T_RWE),
-                     (0, 81) : ("TMCL code protect", TR_m4, T_RWE),
-      #Wrong type?? #(0, 84) : ("coordinate storage", TR_1u, T_RWE),
+GLOBAL_PARAMETER = { (0, 64)  : ("EEPROM magic", TR_8u, T_RWE),
+                     (0, 65)  : ("RS485 baud rate", TR_m12, T_RWE),
+                     (0, 66)  : ("serial address", TR_8u, T_RWE),
+                     (0, 73)  : ("EEPROM lock flag", TR_1u, T_RWE),
+                     (0, 75)  : ("telegram pause time", TR_8u, T_RWE),
+                     (0, 76)  : ("serial host adress", TR_8u, T_RWE),
+                     (0, 77)  : ("auto start mode", TR_1u, T_RWE),
+                     (0, 81)  : ("TMCL code protect", TR_m4, T_RWE),
+      #Wrong type?? #(0, 84)  : ("coordinate storage", TR_1u, T_RWE),
                      (0, 128) : ("TMCL application status", TR_m3, T_R),
                      (0, 129) : ("download mode", TR_1u, T_R),
                      (0, 130) : ("TMCL program counter", TR_32u, T_R),
                      (0, 132) : ("tick timer", TR_32u, T_RW),
       #Wrong type?? #(0, 133) : ("random number", TR_xRND0, T_R),
-                     (3, 0) : ("Timer0 period", TR_32u, T_RWE),
-                     (3, 1) : ("Timer1 period", TR_32u, T_RWE),
-                     (3, 2) : ("Timer2 period", TR_32u, T_RWE),
-                     (3, 39) : ("Input0 edge type", TR_m4, T_RWE),
-                     (3, 40) : ("Input0 edge type", TR_m4, T_RWE)
+                     (3, 0)   : ("Timer0 period", TR_32u, T_RWE),
+                     (3, 1)   : ("Timer1 period", TR_32u, T_RWE),
+                     (3, 2)   : ("Timer2 period", TR_32u, T_RWE),
+                     (3, 39)  : ("Input0 edge type", TR_m4, T_RWE),
+                     (3, 40)  : ("Input0 edge type", TR_m4, T_RWE)
                    }
 
 # add general purpose registers
