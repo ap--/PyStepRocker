@@ -36,7 +36,7 @@ class StepRocker(object):
             self.TMCL.sap(mn, 5, max_accel)
             self.TMCL.sap(mn, 6, max_current)
             self.TMCL.sap(mn, 7, standbycurrent)
-            self.TMCL.sap(mn, 140, int(microstep_resolution))
+            self.TMCL.sap(mn, 140, microstep_resolution)
             if store:
                 self.TMCL.stap(mn, 4)
                 self.TMCL.stap(mn, 5)
