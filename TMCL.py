@@ -105,7 +105,7 @@ INTERRUPT_VECTORS = {  0 : "Timer 0",
 
 CMD_MVP_TYPES = { 'ABS' : 0,
                   'REL' : 1,
-                  'COORDS' : 2 }
+                  'COORD' : 2 }
 CMD_RFS_TYPES = { 'START' : 0,
                   'STOP' : 1,
                   'STATUS' : 2 }
@@ -368,8 +368,8 @@ class TMCLDevice(object):
         if t == 'ABS' and not -2**23 <= v <= 2**23:
             raise TMCLError("MVP: ABS: value not in range(-2**23,2**23)")
         # pass 'REL' because we dont know the current pos here
-        if t == 'COORDS' and not 0 <= v <= 20:
-            raise TMCLError("MVP: COORDS: value not in range(21)")
+        if t == 'COORD' and not 0 <= v <= 20:
+            raise TMCLError("MVP: COORD: value not in range(21)")
         t = CMD_MVP_TYPES[t] % (1<<8)
         status, value = self._query((0x01, cn, t, mn, v))
         if status != STAT_OK:
@@ -501,7 +501,7 @@ class TMCLDevice(object):
             raise TMCLError("GCO: got status "+STATUSCODES[status])
         return value
 
-    def sio(port_number, state):
+    def sio(self, port_number, state):
         """
         tmcl_sio(output_number, state) --> None
 
@@ -520,7 +520,7 @@ class TMCLDevice(object):
             raise TMCLError("SIO: got status "+STATUSCODES[status])
         return None
         
-    def gio(port_number, bank_number):
+    def gio(self, port_number, bank_number):
         """
         tmcl_gio(port_number, bank_number) --> int
         
@@ -537,12 +537,15 @@ class TMCLDevice(object):
         cn = NUMBER_COMMANDS['GIO']
         outp = int(port_number)
         bank = int(bank_number)
-        if bank == 0 and not (0 <= outp <= 3):
-            raise TMCLError("GIO: output_number not in range(4) @ bank0")
-        elif bank == 1 and not (0 <= outp <= 2):
-            raise TMCLError("GIO: output_number not in range(3) @ bank1")
-        elif bank == 2 and not (0 <= outp <= 4):
-            raise TMCLError("GIO: output_number not in range(5) @ bank2")
+        if bank == 0:
+            if not (0 <= outp <= 3):
+                raise TMCLError("GIO: output_number not in range(4) @ bank0")
+        elif bank == 1:
+            if not (0 <= outp <= 2):
+                raise TMCLError("GIO: output_number not in range(3) @ bank1")
+        elif bank == 2:
+            if not (0 <= outp <= 4):
+                raise TMCLError("GIO: output_number not in range(5) @ bank2")
         else:
             raise TMCLError("GIO: bank_number not in range(3)")
         status, value = self._query((0x01, cn, outp, bank, 0x0000))
