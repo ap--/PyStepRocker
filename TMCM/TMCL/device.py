@@ -163,7 +163,7 @@ class Device(object):
         if t == 'ABS' and not -self.max_position <= v < self.max_position:
             raise TMCLRangeError(c, t + ": value", v, -self.max_position, self.max_position)
         # pass 'REL' because we dont know the current pos here
-        if t == 'COORDS' and not 0 <= v < self.max_coordinate:
+        if t == 'COORD' and not 0 <= v < self.max_coordinate:
             raise TMCLRangeError(c, t + ": value", v, self.max_coordinate)
         t = codec.byte(CMD_MVP_TYPES[t])
         status, value = self._query((0x01, cn, t, mn, v))
@@ -349,12 +349,15 @@ class Device(object):
         cn = NUMBER_COMMANDS[c]
         outp = int(port_number)
         bank = int(bank_number)
-        if bank == 0 and not (0 <= outp < self.max_output[bank]):
-            raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, self.max_output[bank])
-        elif bank == 1 and not (0 <= outp < self.max_output[bank]):
-            raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, self.max_output[bank])
-        elif bank == 2 and not (0 <= outp < self.max_output[bank]):
-            raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, self.max_output[bank])
+        if bank == 0:
+            if not (0 <= outp < self.max_output[bank]):
+                raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, self.max_output[bank])
+        elif bank == 1:
+            if not (0 <= outp < self.max_output[bank]):
+                raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, self.max_output[bank])
+        elif bank == 2:
+            if not (0 <= outp < self.max_output[bank]):
+                raise TMCLRangeError(c, "output number @ bank{}".format(bank), outp, self.max_output[bank])
         else:
             raise TMCLRangeError(c, "bank number", bank, len(self.max_output))
         status, value = self._query((0x01, cn, outp, bank, 0x0000))

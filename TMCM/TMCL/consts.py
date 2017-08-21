@@ -42,7 +42,7 @@ INTERRUPT_VECTORS = {   0 : "Timer 0",
 
 CMD_MVP_TYPES = { 'ABS'    : 0,
                   'REL'    : 1,
-                  'COORDS' : 2
+                  'COORD'  : 2
                 }
 
 CMD_RFS_TYPES = { 'START'  : 0,
